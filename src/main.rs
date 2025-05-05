@@ -1,13 +1,13 @@
 use bevy::prelude::*;
-
-mod map;
-mod movement;
 mod player;
+mod movement;
+mod tilemap;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_systems(Startup, (map::spawn_map, player::spawn_player))
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
+        .add_plugins(tilemap::TilemapPlugin)
+        .add_systems(Startup, player::spawn_player)
         .add_systems(Update, movement::player_movement)
         .run();
 }
