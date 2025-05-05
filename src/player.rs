@@ -3,28 +3,23 @@ use bevy::prelude::*;
 #[derive(Component)]
 pub struct Player;
 
-use bevy::prelude::*;
-
 pub fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let texture_handle = asset_server.load("Character0/Character0_Idle.png");
+    let texture_handle = asset_server.load("Tiles/tile_0105.png");
 
-    let texture_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        Vec2::new(32.0, 32.0),
-        9,
-        5,
-        None,
-        None,
-    );
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 9, 5, None, None);
+    let layout_handle = texture_atlas_layouts.add(layout);
 
-    commands.spawn(SpriteSheetBundle {
-        texture_atlas: texture_atlas_handle,
-        transform: Transform::from_xyz(0.0, 0.0, 1.0),
-        ..default()
-    });
+    commands.spawn((
+        SpriteSheetBundle {
+            texture: texture_handle,
+            atlas: TextureAtlas { layout: layout_handle, index: 0 },
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            ..default()
+        },
+        Player,
+    ));
 }
