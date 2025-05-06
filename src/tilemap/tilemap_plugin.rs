@@ -13,9 +13,6 @@ pub fn spawn_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    // 1. Add a 2D camera
-    commands.spawn(Camera2dBundle::default());
-
     // 2. Read tile path from config file
     let config_path = "assets/tile_config.txt";
     let tile_path = fs::read_to_string(config_path)
