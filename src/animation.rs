@@ -10,20 +10,40 @@ pub fn animate_sprite(
 
         if timer.0.just_finished() {
             if anim.moving {
-                anim.frame = (anim.frame + 1) % 2;
+                anim.frame = (anim.frame + 1) % 4;
 
                 atlas.index = match anim.direction {
-                    Direction::Left => if anim.frame == 0 { 50 } else { 77 },
-                    Direction::Down => if anim.frame == 0 { 51 } else { 78 },
-                    Direction::Up => if anim.frame == 0 { 52 } else { 79 },
-                    Direction::Right => if anim.frame == 0 { 53 } else { 80 },
-                };                
+                    Direction::Left => match anim.frame {
+                        0 => 4,
+                        1 => 0,
+                        2 => 8,
+                        _ => 0,
+                    },
+                    Direction::Down => match anim.frame {
+                        0 => 5,
+                        1 => 1,
+                        2 => 9,
+                        _ => 1,
+                    },
+                    Direction::Up => match anim.frame {
+                        0 => 6,
+                        1 => 2,
+                        2 => 10,
+                        _ => 2,
+                    },
+                    Direction::Right => match anim.frame {
+                        0 => 7,
+                        1 => 3,
+                        2 => 11,
+                        _ => 3,
+                    },
+                };               
             } else {
                 atlas.index = match anim.direction {
-                    Direction::Left => 23,
-                    Direction::Down => 24,
-                    Direction::Up => 25,
-                    Direction::Right => 26,
+                    Direction::Left => 0,
+                    Direction::Down => 1,
+                    Direction::Up => 2,
+                    Direction::Right => 3,
                 };                
             }
         }

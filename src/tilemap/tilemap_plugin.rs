@@ -19,9 +19,6 @@ pub fn spawn_map(
     let map_height = 36;
     let background_tile_id = 28; // tile_0028.png
 
-    // === CAMERA ===
-    commands.spawn(Camera2dBundle::default());
-
     // === BACKGROUND LAYER ===
     let background_path = format!("Tiles/tile_{:04}.png", background_tile_id);
     let background_texture: Handle<Image> = asset_server.load(background_path);
