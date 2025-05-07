@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
 mod animation;
-mod npc;
-mod movement;
-mod player;
-mod tilemap;
 mod display;
 use display::{spawn_camera, camera_follow_player, camera_zoom};
+mod movement;
+mod npc;
+mod player;
+mod tilemap;
 
 fn main() {
     App::new()
