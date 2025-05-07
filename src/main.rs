@@ -1,22 +1,25 @@
 use bevy::prelude::*;
 
 mod animation;
-mod camera;
-mod player;
-mod movement;
-mod tilemap;
 mod display;
+mod camera;
+mod movement;
+mod npc;
+mod player;
+mod tilemap;
 
 fn main() {
     App::new()
         .add_plugins(display::WindowConfigPlugin)
         .add_plugins(tilemap::TilemapPlugin)
-        .add_systems(Startup, (player::spawn_player, camera::spawn_camera))
+        .add_systems(Startup, (camera::spawn_camera, npc::spawn_npc, player::spawn_player))
         .add_systems(Update, (
-            movement::player_movement,
             animation::animate_sprite,
             camera::camera_follow_player,
             camera::camera_zoom,
+            movement::player_movement,
+            npc::npc_interact,
+            npc::npc_patrol,
         ))
         .run();
 }

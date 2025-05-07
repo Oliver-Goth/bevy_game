@@ -1,9 +1,9 @@
 use bevy::prelude::*;
-use crate::player::{AnimationTimer, PlayerAnimation, Direction};
+use crate::player::{AnimationTimer, CharacterAnimation, Direction};
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<(&mut TextureAtlas, &mut AnimationTimer, &mut PlayerAnimation)>,
+    mut query: Query<(&mut TextureAtlas, &mut AnimationTimer, &mut CharacterAnimation)>,
 ) {
     for (mut atlas, mut timer, mut anim) in query.iter_mut() {
         timer.0.tick(time.delta());

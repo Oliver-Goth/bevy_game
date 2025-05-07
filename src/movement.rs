@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use bevy::input::keyboard::KeyCode;
-use crate::player::{Player, PlayerAnimation, Direction};
+use crate::player::{Player, CharacterAnimation, Direction};
 
 pub fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Transform, &mut PlayerAnimation), With<Player>>,
+    mut query: Query<(&mut Transform, &mut CharacterAnimation), With<Player>>,
     time: Res<Time>,
 ) {
     let mut direction_vec = Vec3::ZERO;
