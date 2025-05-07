@@ -15,7 +15,7 @@ pub enum Direction {
 }
 
 #[derive(Component)]
-pub struct PlayerAnimation {
+pub struct CharacterAnimation {
     pub direction: Direction,
     pub moving: bool,
     pub frame: usize,
@@ -26,7 +26,7 @@ pub fn spawn_player(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let texture_handle = asset_server.load("Sprites/Player/player1.png");
+    let texture_handle = asset_server.load("Sprites/Character/character1.png");
 
     let layout = TextureAtlasLayout::from_grid(Vec2::new(16.0, 16.0), 4, 3, None, None);
     let layout_handle = texture_atlas_layouts.add(layout);
@@ -41,7 +41,7 @@ pub fn spawn_player(
         },
         Player,
         AnimationTimer(Timer::from_seconds(0.15, TimerMode::Repeating)),
-        PlayerAnimation {
+        CharacterAnimation {
             direction: Direction::Down,
             moving: false,
             frame: 0,
