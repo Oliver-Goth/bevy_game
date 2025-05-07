@@ -30,10 +30,6 @@ pub fn player_movement(
     for (mut transform, mut anim) in query.iter_mut() {
         if direction_vec != Vec3::ZERO {
             transform.translation += direction_vec.normalize() * 100.0 * time.delta_seconds();
-            
-            transform.translation.x = (transform.translation.x / 1.0).round() * 1.0;
-            transform.translation.y = (transform.translation.y / 1.0).round() * 1.0;      
-
             if let Some(dir) = new_direction {
                 anim.direction = dir;
             }
