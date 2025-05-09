@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use crate::player::{CharacterAnimation, AnimationTimer, Direction, Player};
 
 #[derive(Component)]
@@ -56,6 +57,10 @@ pub fn spawn_npc(
             current: 0,
         },
         NpcState { stopped: false },
+
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(8.0, 8.0),
+        LockedAxes::ROTATION_LOCKED,
     ));
 }
 

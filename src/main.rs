@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 mod animation;
 mod display;
@@ -12,6 +13,14 @@ fn main() {
     App::new()
         .add_plugins(display::WindowConfigPlugin)
         .add_plugins(tilemap::TilemapPlugin)
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+        .add_plugins(RapierDebugRenderPlugin::default()) 
+
+        .insert_resource(RapierConfiguration {
+            gravity: Vec2::ZERO,
+            ..default()
+        })
+
         .add_systems(Startup, (camera::spawn_camera, npc::spawn_npc, player::spawn_player))
         .add_systems(Update, (
             animation::animate_sprite,

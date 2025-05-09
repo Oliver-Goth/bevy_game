@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 
 #[derive(Component)]
 pub struct Player;
@@ -46,5 +47,10 @@ pub fn spawn_player(
             moving: false,
             frame: 0,
         },
+        
+        RigidBody::Dynamic,
+        Collider::cuboid(8.0, 8.0),
+        LockedAxes::ROTATION_LOCKED,
+        Velocity::zero(),
     ));
 }

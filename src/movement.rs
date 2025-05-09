@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 use bevy::input::keyboard::KeyCode;
+use bevy_rapier2d::prelude::*;
 use crate::player::{Player, CharacterAnimation, Direction};
 
 pub fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Transform, &mut CharacterAnimation), With<Player>>,
-    time: Res<Time>,
+    mut query: Query<(&mut Velocity, &mut CharacterAnimation), With<Player>>,
 ) {
-    let mut direction_vec = Vec3::ZERO;
+    let mut direction_vec = Vec2::ZERO;
     let mut new_direction = None;
 
     if keyboard_input.pressed(KeyCode::KeyW) {
@@ -27,14 +27,15 @@ pub fn player_movement(
         new_direction = Some(Direction::Right);
     }
 
-    for (mut transform, mut anim) in query.iter_mut() {
-        if direction_vec != Vec3::ZERO {
-            transform.translation += direction_vec.normalize() * 100.0 * time.delta_seconds();
+    for (mut velocity, mut anim) in query.iter_mut() {
+        if direction_vec != Vec2::ZERO {
+            velocity.linvel = direction_vec.normalize() * 100.0;
             if let Some(dir) = new_direction {
                 anim.direction = dir;
             }
             anim.moving = true;
         } else {
+            velocity.linvel = Vec2::ZERO;
             anim.moving = false;
         }
     }
