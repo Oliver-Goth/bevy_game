@@ -61,35 +61,54 @@ pub fn spawn_npc(
         RigidBody::KinematicPositionBased,
         Collider::cuboid(8.0, 8.0),
         LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
     ));
 }
 
 pub fn npc_patrol(
     time: Res<Time>,
-    mut query: Query<(&mut Transform, &mut Waypoints, &mut CharacterAnimation, &NpcState), With<Npc>>,
+    mut query: Query<(
+        Entity,
+        &mut Waypoints,
+        &mut CharacterAnimation,
+        &NpcState,
+        &mut KinematicCharacterController,
+    ), With<Npc>>,
+    mut controller_output: Query<&KinematicCharacterControllerOutput>,
+    transforms: Query<&Transform>,
 ) {
-    for (mut transform, mut path, mut anim, state) in query.iter_mut() {
+    for (entity, mut path, mut anim, state, mut controller) in query.iter_mut() {
         if state.stopped {
             anim.moving = false;
+            controller.translation = Some(Vec2::ZERO);
             continue;
         }
 
+        let transform = transforms.get(entity).unwrap();
         let target = path.points[path.current];
         let direction = (target - transform.translation).truncate();
 
         if direction.length() < 1.0 {
             path.current = (path.current + 1) % path.points.len();
             anim.moving = false;
+            controller.translation = Some(Vec2::ZERO);
         } else {
             let step = direction.normalize() * 50.0 * time.delta_seconds();
-            transform.translation += step.extend(0.0);
-            anim.moving = true;
+            controller.translation = Some(step);
 
-            anim.direction = if direction.x.abs() > direction.y.abs() {
-                if direction.x > 0.0 { Direction::Right } else { Direction::Left }
-            } else {
-                if direction.y > 0.0 { Direction::Up } else { Direction::Down }
-            };
+            if let Ok(output) = controller_output.get(entity) {
+                if output.effective_translation.length_squared() < 0.01 {
+                    anim.moving = false;
+                } else {
+                    anim.moving = true;
+
+                    anim.direction = if direction.x.abs() > direction.y.abs() {
+                        if direction.x > 0.0 { Direction::Right } else { Direction::Left }
+                    } else {
+                        if direction.y > 0.0 { Direction::Up } else { Direction::Down }
+                    };
+                }
+            }
         }
     }
 }
