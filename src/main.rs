@@ -2,11 +2,12 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 mod animation;
-mod display;
 mod camera;
+mod display;
 mod movement;
 mod npc;
 mod player;
+mod stamina;
 mod tilemap;
 
 fn main() {
@@ -20,6 +21,8 @@ fn main() {
             gravity: Vec2::ZERO,
             ..default()
         })
+        .insert_resource(stamina::StaminaPrintTimer(Timer::from_seconds(0.5, TimerMode::Repeating)))
+
 
         .add_systems(Startup, (camera::spawn_camera, npc::spawn_npc, player::spawn_player))
         .add_systems(Update, (
@@ -29,6 +32,7 @@ fn main() {
             movement::player_movement,
             npc::npc_interact,
             npc::npc_patrol,
+            stamina::stamina_system,
         ))
         .run();
 }

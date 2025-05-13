@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::stamina::Stamina;
+
 #[derive(Component)]
 pub struct Player;
 
@@ -52,5 +54,7 @@ pub fn spawn_player(
         Collider::cuboid(8.0, 8.0),
         LockedAxes::ROTATION_LOCKED,
         Velocity::zero(),
+
+        Stamina::new(500.0),
     ));
 }
