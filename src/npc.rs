@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use crate::player::{CharacterAnimation, AnimationTimer, Direction, Player};
+use crate::dialogue::logic::DialogueState; // TESTING: TO BE DELETED //
+use crate::dialogue::ui::{spawn_dialogue_box, DialogueBox}; // TESTING: TO BE DELETED  Part 2 //
 
 #[derive(Component)]
 pub struct Npc;
@@ -93,6 +95,10 @@ pub fn npc_interact(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     player_query: Query<&Transform, With<Player>>,
     mut npc_query: Query<(&Transform, &mut CharacterAnimation, &mut NpcState), With<Npc>>,
+    mut dialogue: ResMut<DialogueState>, // TESTING: TO BE DELETED //
+    mut commands: Commands, // TeSTING: TO BE DELETED Part 2 //
+    asset_server: Res<AssetServer>, // TESTING: TO BE DELETED Part 2 //
+    dialogue_box_query: Query<Entity, With<DialogueBox>>, // ✅ Add query
 ) {
     let Ok(player_transform) = player_query.get_single() else { return };
 
@@ -105,6 +111,11 @@ pub fn npc_interact(
         }
 
         if keyboard_input.just_pressed(KeyCode::KeyE) && distance < 24.0 {
+            // ✅ Don't trigger again if dialogue is already active
+            if dialogue.active {
+                return;
+            }
+
             let diff = (npc_transform.translation - player_transform.translation).truncate();
             anim.direction = if diff.x.abs() > diff.y.abs() {
                 if diff.x > 0.0 { Direction::Left } else { Direction::Right }
@@ -115,7 +126,16 @@ pub fn npc_interact(
             anim.moving = false;
             state.stopped = true;
 
-            println!("NPC: Hello there!");
+            //println!("NPC: Hello there! How's your day going?");
+            //dialogue.set_line("NPC: Hello there! How's your day going?");
+
+            // ✅ Load new dialogue
+            dialogue.load_file("dialogue/npcs/nora.ron");
+
+            // ✅ Only spawn a dialogue box if one isn't already on screen
+            if dialogue_box_query.get_single().is_err() {
+                spawn_dialogue_box(&mut commands, &asset_server);
+            }
         }
     }
 }
