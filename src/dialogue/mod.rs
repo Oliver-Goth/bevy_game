@@ -1,4 +1,3 @@
-// src/dialogue/mod.rs
 pub mod logic;
 pub mod ui;
 

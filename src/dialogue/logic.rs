@@ -1,4 +1,3 @@
-// src/dialogue/logic.rs
 use bevy::prelude::*;
 use serde::Deserialize;
 use ron::de::from_str;

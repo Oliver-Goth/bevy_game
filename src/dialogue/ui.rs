@@ -1,4 +1,3 @@
-// src/dialogue/ui.rs
 use bevy::prelude::*;
 use crate::dialogue::logic::DialogueState;
 
