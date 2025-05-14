@@ -98,7 +98,7 @@ pub fn npc_interact(
     mut dialogue: ResMut<DialogueState>, // TESTING: TO BE DELETED //
     mut commands: Commands, // TeSTING: TO BE DELETED Part 2 //
     asset_server: Res<AssetServer>, // TESTING: TO BE DELETED Part 2 //
-    dialogue_box_query: Query<Entity, With<DialogueBox>>, // ✅ Add query
+    dialogue_box_query: Query<Entity, With<DialogueBox>>, // TESTING: TO BE DELETED Part 2 //
 ) {
     let Ok(player_transform) = player_query.get_single() else { return };
 
@@ -111,7 +111,7 @@ pub fn npc_interact(
         }
 
         if keyboard_input.just_pressed(KeyCode::KeyE) && distance < 24.0 {
-            // ✅ Don't trigger again if dialogue is already active
+            // Don't trigger again if dialogue is already active
             if dialogue.active {
                 return;
             }
@@ -129,10 +129,10 @@ pub fn npc_interact(
             //println!("NPC: Hello there! How's your day going?");
             //dialogue.set_line("NPC: Hello there! How's your day going?");
 
-            // ✅ Load new dialogue
+            // Load new dialogue
             dialogue.load_file("dialogue/npcs/nora.ron");
 
-            // ✅ Only spawn a dialogue box if one isn't already on screen
+            // Only spawn a dialogue box if one isn't already on screen
             if dialogue_box_query.get_single().is_err() {
                 spawn_dialogue_box(&mut commands, &asset_server);
             }
