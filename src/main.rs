@@ -21,7 +21,7 @@ fn main() {
             dialogue::DialoguePlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
             RapierDebugRenderPlugin::default(),
-            day_night_cycle::DayNightCyclePlugin,
+            //day_night_cycle::DayNightCyclePlugin,
         ))
         .insert_resource(RapierConfiguration {
             gravity: Vec2::ZERO,
