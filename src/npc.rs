@@ -1,7 +1,9 @@
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use crate::player::{CharacterAnimation, AnimationTimer, Direction, Player};
-use crate::dialogue::logic::DialogueState; // TESTING: TO BE DELETED //
-use crate::dialogue::ui::{spawn_dialogue_box, DialogueBox}; // TESTING: TO BE DELETED  Part 2 //
+
+use crate::dialogue::logic::DialogueState;
+use crate::dialogue::ui::{spawn_dialogue_box, DialogueBox};
 
 #[derive(Component)]
 pub struct Npc;
@@ -58,35 +60,58 @@ pub fn spawn_npc(
             current: 0,
         },
         NpcState { stopped: false },
+
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(8.0, 8.0),
+        LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
     ));
 }
 
 pub fn npc_patrol(
     time: Res<Time>,
-    mut query: Query<(&mut Transform, &mut Waypoints, &mut CharacterAnimation, &NpcState), With<Npc>>,
+    mut query: Query<(
+        Entity,
+        &mut Waypoints,
+        &mut CharacterAnimation,
+        &NpcState,
+        &mut KinematicCharacterController,
+    ), With<Npc>>,
+    mut controller_output: Query<&KinematicCharacterControllerOutput>,
+    transforms: Query<&Transform>,
 ) {
-    for (mut transform, mut path, mut anim, state) in query.iter_mut() {
+    for (entity, mut path, mut anim, state, mut controller) in query.iter_mut() {
         if state.stopped {
             anim.moving = false;
+            controller.translation = Some(Vec2::ZERO);
             continue;
         }
 
+        let transform = transforms.get(entity).unwrap();
         let target = path.points[path.current];
         let direction = (target - transform.translation).truncate();
 
         if direction.length() < 1.0 {
             path.current = (path.current + 1) % path.points.len();
             anim.moving = false;
+            controller.translation = Some(Vec2::ZERO);
         } else {
             let step = direction.normalize() * 50.0 * time.delta_seconds();
-            transform.translation += step.extend(0.0);
-            anim.moving = true;
+            controller.translation = Some(step);
 
-            anim.direction = if direction.x.abs() > direction.y.abs() {
-                if direction.x > 0.0 { Direction::Right } else { Direction::Left }
-            } else {
-                if direction.y > 0.0 { Direction::Up } else { Direction::Down }
-            };
+            if let Ok(output) = controller_output.get(entity) {
+                if output.effective_translation.length_squared() < 0.01 {
+                    anim.moving = false;
+                } else {
+                    anim.moving = true;
+
+                    anim.direction = if direction.x.abs() > direction.y.abs() {
+                        if direction.x > 0.0 { Direction::Right } else { Direction::Left }
+                    } else {
+                        if direction.y > 0.0 { Direction::Up } else { Direction::Down }
+                    };
+                }
+            }
         }
     }
 }
@@ -95,10 +120,11 @@ pub fn npc_interact(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     player_query: Query<&Transform, With<Player>>,
     mut npc_query: Query<(&Transform, &mut CharacterAnimation, &mut NpcState), With<Npc>>,
-    mut dialogue: ResMut<DialogueState>, // TESTING: TO BE DELETED //
-    mut commands: Commands, // TeSTING: TO BE DELETED Part 2 //
-    asset_server: Res<AssetServer>, // TESTING: TO BE DELETED Part 2 //
-    dialogue_box_query: Query<Entity, With<DialogueBox>>, // TESTING: TO BE DELETED Part 2 //
+
+    mut dialogue: ResMut<DialogueState>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    dialogue_box_query: Query<Entity, With<DialogueBox>>,
 ) {
     let Ok(player_transform) = player_query.get_single() else { return };
 
