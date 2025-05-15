@@ -37,7 +37,7 @@ pub fn stamina_system(
 
     for (mut stamina, anim) in query.iter_mut() {
         let delta = time.delta_seconds();
-        let drain_rate = if anim.moving { 1.0 } else { 0.1 };
+        let drain_rate = if anim.moving { 10.0 } else { 0.1 };
 
         stamina.drain(drain_rate, delta);
 
