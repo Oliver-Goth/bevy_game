@@ -10,7 +10,7 @@ mod npc;
 mod player;
 mod stamina;
 mod tilemap;
-mod day_night_cycle; // Add this line
+mod day_night_cycle;
 
 fn main() {
     App::new()
@@ -21,7 +21,7 @@ fn main() {
             dialogue::DialoguePlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
             RapierDebugRenderPlugin::default(),
-            day_night_cycle::DayNightCyclePlugin, // Add the DayNightCyclePlugin here
+            day_night_cycle::DayNightCyclePlugin,
         ))
         .insert_resource(RapierConfiguration {
             gravity: Vec2::ZERO,

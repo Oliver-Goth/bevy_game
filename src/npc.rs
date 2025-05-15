@@ -77,7 +77,7 @@ pub fn npc_patrol(
         &NpcState,
         &mut KinematicCharacterController,
     ), With<Npc>>,
-    mut controller_output: Query<&KinematicCharacterControllerOutput>,
+    controller_output: Query<&KinematicCharacterControllerOutput>,
     transforms: Query<&Transform>,
 ) {
     for (entity, mut path, mut anim, state, mut controller) in query.iter_mut() {

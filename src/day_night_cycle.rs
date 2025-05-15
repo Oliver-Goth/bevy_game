@@ -1,6 +1,11 @@
 use bevy::prelude::*;
 
-const SECONDS_PER_DAY: f32 = 60.0;
+//10min
+const SECONDS_PER_DAY: f32 = 600.0;
+
+//1min(Debug)
+//const SECONDS_PER_DAY: f32 = 60.0;
+
 const MAX_ALPHA: f32 = 0.90;
 
 #[derive(Component)]
