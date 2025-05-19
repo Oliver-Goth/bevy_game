@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use crate::player::{CharacterAnimation, Player};
+use crate::game_state::AppState;
 
 #[derive(Component)]
 pub struct Stamina {
@@ -32,12 +33,13 @@ pub fn stamina_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut print_timer: ResMut<StaminaPrintTimer>,
     mut query: Query<(&mut Stamina, &CharacterAnimation), With<Player>>,
+    mut next_state: ResMut<NextState<AppState>>,
 ) {
     print_timer.0.tick(time.delta());
 
     for (mut stamina, anim) in query.iter_mut() {
         let delta = time.delta_seconds();
-        let drain_rate = if anim.moving { 10.0 } else { 0.1 };
+        let drain_rate = if anim.moving { 50.0 } else { 0.1 };
 
         stamina.drain(drain_rate, delta);
 
@@ -48,6 +50,12 @@ pub fn stamina_system(
 
         if print_timer.0.finished() {
             println!("Stamina: {:.1}/{}", stamina.current, stamina.max);
+        }
+
+        // Trigger Game Over
+        if stamina.current <= 0.0 {
+            println!("🟥 Game Over: stamina depleted!");
+            next_state.set(AppState::GameOver);
         }
     }
 }

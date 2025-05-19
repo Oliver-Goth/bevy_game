@@ -6,13 +6,21 @@ mod day_night_cycle;
 mod dialogue;
 mod display;
 use display::{spawn_camera, spawn_ui_camera, camera_follow_player, camera_zoom};
+mod game_state;
+use game_state::AppState;
 mod movement;
 mod npc;
 mod player;
 mod stamina;
 mod tilemap;
 mod ui;
+use ui::game_over_ui::{
+    spawn_game_over_ui,
+    handle_restart_button_click,
+    despawn_game_over_ui,
+};
 use ui::stamina_bar::{spawn_stamina_bar_ui, update_stamina_bar};
+
 
 fn main() {
     App::new()
@@ -46,7 +54,16 @@ fn main() {
             npc::npc_interact,
             npc::npc_patrol,
             stamina::stamina_system,
-            update_stamina_bar,
+            update_stamina_bar,     
         ))
+        .init_state::<AppState>()
+        // Spawn UI when entering Game Over
+        .add_systems(OnEnter(AppState::GameOver), spawn_game_over_ui)
+
+        // Run button logic while in Game Over
+        .add_systems(Update, handle_restart_button_click.run_if(in_state(AppState::GameOver)))
+
+        // Despawn UI when leaving Game Over
+        .add_systems(OnExit(AppState::GameOver), despawn_game_over_ui)
         .run();
 }
