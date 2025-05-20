@@ -36,8 +36,11 @@ pub fn spawn_game_over_ui(mut commands: Commands, asset_server: Res<AssetServer>
         parent.spawn((
             ButtonBundle {
                 style: Style {
+                    width: Val::Px(200.0), // Bevy 0.13 way
+                    height: Val::Px(50.0), // Bevy 0.13 way
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
                     margin: UiRect::all(Val::Px(10.0)),
-                    padding: UiRect::all(Val::Px(12.0)),
                     ..default()
                 },
                 background_color: Color::DARK_GRAY.into(),
@@ -68,6 +71,7 @@ pub fn handle_restart_button_click(
     for (interaction, mut bg) in &mut interaction_query {
         match *interaction {
             Interaction::Pressed => {
+                println!("🔁 Restart button clicked!");
                 next_state.set(AppState::InGame);
             }
             Interaction::Hovered => {
@@ -81,6 +85,7 @@ pub fn handle_restart_button_click(
 }
 
 pub fn despawn_game_over_ui(mut commands: Commands, query: Query<Entity, With<GameOverUI>>) {
+    println!("🧹 Despawning Game Over UI...");
     for entity in &query {
         commands.entity(entity).despawn_recursive();
     }

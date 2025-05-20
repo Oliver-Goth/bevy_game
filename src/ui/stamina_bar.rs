@@ -4,7 +4,7 @@ use bevy::render::view::RenderLayers;
 use crate::player::Player;
 use crate::stamina::Stamina;
 
-/// This layer is rendered by the second UI camera.
+// This layer is rendered by the second UI camera.
 pub const STAMINA_UI_LAYER: u8 = 1;
 
 #[derive(Component)]
