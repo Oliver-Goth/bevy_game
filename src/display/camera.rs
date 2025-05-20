@@ -2,6 +2,11 @@ use bevy::prelude::*;
 use bevy::input::mouse::MouseWheel;
 use bevy::input::keyboard::KeyCode;
 use crate::player::Player;
+use bevy::render::view::RenderLayers;
+use crate::ui::stamina_bar::STAMINA_UI_LAYER;
+
+#[derive(Component)]
+pub struct UICamera;
 
 #[derive(Component)]
 pub struct MainCamera;
@@ -55,4 +60,19 @@ pub fn camera_zoom(
         let new_scale = (projection.scale + zoom_delta).clamp(0.1, 5.0);
         projection.scale = new_scale;
     }
+}
+
+pub fn spawn_ui_camera(mut commands: Commands) {
+    commands.spawn((
+        Camera2dBundle {
+            transform: Transform::from_xyz(450.0, -350.0, 1000.0),
+            camera: Camera {
+                order: 1,
+                ..default()
+            },
+            ..default()
+        },
+        UICamera,
+        RenderLayers::layer(STAMINA_UI_LAYER),
+    ));
 }
