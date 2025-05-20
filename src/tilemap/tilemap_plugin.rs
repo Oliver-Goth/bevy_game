@@ -59,17 +59,15 @@ pub fn spawn_map(
             ));
         }
     }
-
-    let tile_x = -5;
-    let tile_y = 5;
-
-    let house1_pos_x = tile_x as f32 * tile_size;
-    let house1_pos_y = tile_y as f32 * tile_size;
+  
+    // House 1
+    let house1_pos_x = -5 as f32 * tile_size;
+    let house1_pos_y = 5 as f32 * tile_size;
 
     let house1_texture = asset_server.load("Sprites/Buildings/House1.png");
     let house1g_texture = asset_server.load("Sprites/Buildings/House1g.png");
     let house1d_texture = asset_server.load("Sprites/Buildings/House1d.png");
-
+    
     commands.spawn((
         SpriteBundle {
             texture: house1_texture,
@@ -82,7 +80,6 @@ pub fn spawn_map(
         KinematicCharacterController::default(),
         MainMap,
     ));
-
     commands.spawn((
         SpriteBundle {
             texture: house1g_texture,
@@ -91,7 +88,6 @@ pub fn spawn_map(
         },
         MainMap,
     ));
-
     commands.spawn((
         SpriteBundle {
             texture: house1d_texture,
@@ -101,6 +97,94 @@ pub fn spawn_map(
         Door {
             target_state: GameState::InsideHouse1,
         },
+        MainMap,
+    ));
+    
+    // School
+    let school_pos_x = 9 as f32 * tile_size;
+    let school_pos_y = 9 as f32 * tile_size;
+
+    let school_texture = asset_server.load("Sprites/Buildings/School.png");
+    let schools_texture = asset_server.load("Sprites/Buildings/Schools.png");
+    let schoolg_texture = asset_server.load("Sprites/Buildings/Schoolg.png");
+    let schoold_texture = asset_server.load("Sprites/Buildings/Schoold.png");
+
+    let empty_texture = asset_server.load("Sprites/Others/Empty.png");
+    
+    commands.spawn((
+        SpriteBundle {
+            texture: school_texture,
+            transform: Transform::from_xyz(school_pos_x, school_pos_y, 2.0),
+            ..Default::default()
+        },
+        MainMap,
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: schools_texture,
+            transform: Transform::from_xyz(school_pos_x, school_pos_y, 0.0),
+            ..Default::default()
+        },
+        MainMap,
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: schoolg_texture,
+            transform: Transform::from_xyz(school_pos_x, school_pos_y, 0.0),
+            ..Default::default()
+        },
+        MainMap,
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: schoold_texture,
+            transform: Transform::from_xyz(school_pos_x-48.0, school_pos_y+28.0, 0.0),
+            ..Default::default()
+        },
+        Door {
+            target_state: GameState::InsideSchool,
+        },
+        MainMap,
+    ));
+
+    // Borders
+    commands.spawn((
+        SpriteBundle { //MAIN
+            texture: empty_texture.clone(),
+            transform: Transform::from_xyz(school_pos_x+48.0, school_pos_y-24.0, 2.0),
+            ..Default::default()
+        },
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(54.0, 52.0),
+        LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
+        MainMap,
+    ));
+    commands.spawn((
+        SpriteBundle { //TOP
+            texture: empty_texture.clone(),
+            transform: Transform::from_xyz(school_pos_x, school_pos_y+65.0, 2.0),
+            ..Default::default()
+        },
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(102.0, 37.0),
+        LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
+        MainMap,
+    ));
+    commands.spawn((
+        SpriteBundle { //PILLAR
+            texture: empty_texture.clone(),
+            transform: Transform::from_xyz(school_pos_x-97.0, school_pos_y-24.0, 2.0),
+            ..Default::default()
+        },
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(5.0, 52.0),
+        LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
         MainMap,
     ));
 }

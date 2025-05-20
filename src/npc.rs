@@ -37,7 +37,7 @@ pub fn spawn_npc(
             texture: texture_handle,
             atlas: TextureAtlas { layout: layout_handle, index: 1 },
             transform: Transform {
-                translation: Vec3::new(100.0, 100.0, 1.0),
+                translation: Vec3::new(100.0, -100.0, 1.0),
                 ..default()
             },
             ..default()
@@ -52,10 +52,10 @@ pub fn spawn_npc(
         AnimationTimer(Timer::from_seconds(0.15, TimerMode::Repeating)),
         Waypoints {
             points: vec![
-                Vec3::new(100.0, 100.0, 1.0),
-                Vec3::new(150.0, 100.0, 1.0),
-                Vec3::new(150.0, 150.0, 1.0),
-                Vec3::new(100.0, 150.0, 1.0),
+                Vec3::new(100.0, -100.0, 1.0),
+                Vec3::new(150.0, -100.0, 1.0),
+                Vec3::new(150.0, -150.0, 1.0),
+                Vec3::new(100.0, -150.0, 1.0),
             ],
             current: 0,
         },

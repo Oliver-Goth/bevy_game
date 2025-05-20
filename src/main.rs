@@ -24,6 +24,7 @@ fn main() {
             tilemap::TilemapPlugin,
             tilemap::House1InteriorPlugin,
             tilemap::MapTransitionPlugin,
+            tilemap::SchoolInteriorPlugin,
             dialogue::DialoguePlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
             RapierDebugRenderPlugin::default(),
