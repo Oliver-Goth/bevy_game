@@ -1,5 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+mod states;
+
+use crate::states::GameState;
+
 
 mod animation;
 mod dialogue;
@@ -18,6 +22,8 @@ fn main() {
         .add_plugins((
             display::WindowConfigPlugin,
             tilemap::TilemapPlugin,
+            tilemap::House1InteriorPlugin,
+            tilemap::MapTransitionPlugin,
             dialogue::DialoguePlugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
             RapierDebugRenderPlugin::default(),
@@ -37,5 +43,6 @@ fn main() {
             npc::npc_patrol,
             stamina::stamina_system,
         ))
+        .insert_state(GameState::Outside)
         .run();
 }

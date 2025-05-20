@@ -1,11 +1,19 @@
 use bevy::prelude::*;
 use std::fs;
+use bevy_rapier2d::prelude::*;
+
+use crate::states::GameState;
+use crate::tilemap::map_transition::Door;
+
+#[derive(Component)]
+pub struct MainMap;
 
 pub struct TilemapPlugin;
 
 impl Plugin for TilemapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_map);
+        app.add_systems(OnEnter(GameState::Outside), spawn_map);
+        app.add_systems(OnExit(GameState::Outside), despawn_map);
     }
 }
 
@@ -13,32 +21,11 @@ pub fn spawn_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    // === CONFIGURATION ===
     let tile_size = 16.0;
     let map_width = 50;
     let map_height = 36;
-    let background_tile_id = 28; // tile_0028.png
 
-    // === BACKGROUND LAYER ===
-    let background_path = format!("Tiles/tile_{:04}.png", background_tile_id);
-    let background_texture: Handle<Image> = asset_server.load(background_path);
-
-    for y in 0..map_height {
-        for x in 0..map_width {
-            let pos_x = (x as f32 - map_width as f32 / 2.0) * tile_size;
-            let pos_y = (y as f32 - map_height as f32 / 2.0) * tile_size;
-
-            commands.spawn(SpriteBundle {
-                texture: background_texture.clone(),
-                transform: Transform::from_xyz(pos_x, pos_y, -1.0), // z = -1 → behind map layer
-                ..Default::default()
-            });
-        }
-    }
-
-    // === FOREGROUND TILEMAP LAYER ===
-    let map_file = "assets/map_layout_road_demo.txt";
-    let file_contents = fs::read_to_string(map_file)
+    let file_contents = fs::read_to_string("assets/map_layout_road_demo.txt")
         .expect("❌ Failed to read map_layout_road_demo.txt");
 
     let tile_map: Vec<Vec<u32>> = file_contents
@@ -50,27 +37,79 @@ pub fn spawn_map(
         })
         .collect();
 
-    let _map_tile_height = tile_map.len();
-    let _map_tile_width = tile_map.get(0).map_or(0, |row| row.len());
+    let top_left_x = -(map_width as f32 / 2.0) * tile_size;
+    let top_left_y = (map_height as f32 / 2.0 - 1.0) * tile_size;
 
     for (y, row) in tile_map.iter().enumerate() {
         for (x, &tile_num) in row.iter().enumerate() {
-            let tile_path = format!("Tiles/tile_{:04}.png", tile_num);
-            let texture = asset_server.load(tile_path);
+            let texture = asset_server.load(format!("Tiles/tile_{:04}.png", tile_num));
+            let pos = Vec3::new(
+                top_left_x + x as f32 * tile_size,
+                top_left_y - y as f32 * tile_size,
+                0.0,
+            );
 
-            // Get top-left corner of background
-            let background_top_left_x = -(map_width as f32 / 2.0) * tile_size;
-            let background_top_left_y = (map_height as f32 / 2.0 - 1.0) * tile_size;
-
-            // Place foreground tiles starting from top-left going right/down
-            let pos_x = background_top_left_x + x as f32 * tile_size;
-            let pos_y = background_top_left_y - y as f32 * tile_size;
-
-            commands.spawn(SpriteBundle {
-                texture,
-                transform: Transform::from_xyz(pos_x, pos_y, 0.0), // z = 0 → on top of background
-                ..Default::default()
-            });
+            commands.spawn((
+                SpriteBundle {
+                    texture,
+                    transform: Transform::from_translation(pos),
+                    ..Default::default()
+                },
+                MainMap,
+            ));
         }
+    }
+
+    let tile_x = -5;
+    let tile_y = 5;
+
+    let house1_pos_x = tile_x as f32 * tile_size;
+    let house1_pos_y = tile_y as f32 * tile_size;
+
+    let house1_texture = asset_server.load("Sprites/Buildings/House1.png");
+    let house1g_texture = asset_server.load("Sprites/Buildings/House1g.png");
+    let house1d_texture = asset_server.load("Sprites/Buildings/House1d.png");
+
+    commands.spawn((
+        SpriteBundle {
+            texture: house1_texture,
+            transform: Transform::from_xyz(house1_pos_x, house1_pos_y, 2.0),
+            ..Default::default()
+        },
+        RigidBody::KinematicPositionBased,
+        Collider::cuboid(37.0, 24.0),
+        LockedAxes::ROTATION_LOCKED,
+        KinematicCharacterController::default(),
+        MainMap,
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: house1g_texture,
+            transform: Transform::from_xyz(house1_pos_x, house1_pos_y, 0.0),
+            ..Default::default()
+        },
+        MainMap,
+    ));
+
+    commands.spawn((
+        SpriteBundle {
+            texture: house1d_texture,
+            transform: Transform::from_xyz(house1_pos_x, house1_pos_y-32.0, 0.0),
+            ..Default::default()
+        },
+        Door {
+            target_state: GameState::InsideHouse1,
+        },
+        MainMap,
+    ));
+}
+
+pub fn despawn_map(
+    mut commands: Commands,
+    query: Query<Entity, With<MainMap>>,
+) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
     }
 }
