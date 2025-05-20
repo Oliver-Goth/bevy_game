@@ -1,0 +1,26 @@
+# Ignore compiled output
+/target/
+
+# VS Code project files
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# By default, Cargo.lock is needed for binary apps (like games),
+# so don't ignore it unless you're making a library
+# Uncomment the next line ONLY if you're building a library
+# Cargo.lock
+
+# Backup files
+**/*.rs.bk
+
+# Logs or temp files
+*.log
+
+# Bevy asset pipeline temp files (if you build your own)
+assets/cache/
+assets/tmp/

@@ -1,30 +1,42 @@
-use bevy::prelude::{Res, Query, Transform, With, Vec3, Time};
-use bevy::input::ButtonInput;
+use bevy::prelude::*;
 use bevy::input::keyboard::KeyCode;
-
-use crate::player::Player;
+use bevy_rapier2d::prelude::*;
+use crate::player::{Player, CharacterAnimation, Direction};
 
 pub fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Transform, With<Player>>,
-    time: Res<Time>,
+    mut query: Query<(&mut Velocity, &mut CharacterAnimation), With<Player>>,
 ) {
-    let mut direction = Vec3::ZERO;
+    let mut direction_vec = Vec2::ZERO;
+    let mut new_direction = None;
 
     if keyboard_input.pressed(KeyCode::KeyW) {
-        direction += Vec3::new(1.0, 1.0, 0.0);
+        direction_vec.y += 1.0;
+        new_direction = Some(Direction::Up);
     }
     if keyboard_input.pressed(KeyCode::KeyS) {
-        direction += Vec3::new(-1.0, -1.0, 0.0);
+        direction_vec.y -= 1.0;
+        new_direction = Some(Direction::Down);
     }
     if keyboard_input.pressed(KeyCode::KeyA) {
-        direction += Vec3::new(-1.0, 1.0, 0.0);
+        direction_vec.x -= 1.0;
+        new_direction = Some(Direction::Left);
     }
     if keyboard_input.pressed(KeyCode::KeyD) {
-        direction += Vec3::new(1.0, -1.0, 0.0);
+        direction_vec.x += 1.0;
+        new_direction = Some(Direction::Right);
     }
 
-    for mut transform in query.iter_mut() {
-        transform.translation += direction * 100.0 * time.delta_seconds();
+    for (mut velocity, mut anim) in query.iter_mut() {
+        if direction_vec != Vec2::ZERO {
+            velocity.linvel = direction_vec.normalize() * 100.0;
+            if let Some(dir) = new_direction {
+                anim.direction = dir;
+            }
+            anim.moving = true;
+        } else {
+            velocity.linvel = Vec2::ZERO;
+            anim.moving = false;
+        }
     }
 }
